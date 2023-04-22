@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useStore } from './store'
-import player from './components/player.vue'
 const store = useStore()
 const devices = ref(<MediaDeviceInfo[]>[])
 
@@ -10,19 +9,15 @@ navigator.mediaDevices.enumerateDevices()
   devices.value = devs.filter(d => d.kind == 'audiooutput')
 })
 
-const input = ref('')
-
 function play(path: string) {
-  store.playing = false
-  setTimeout(() => {
-    store.playing = true
-    if (store.soundPlaying !== path) {
-      store.soundPlaying = path
-      console.log('new')
-      
-    }
-  }, 0)
-  // store.play(path)
+  store.play(path)
+}
+
+const input = ref('')
+function changeOutputDevice() {
+  store.outputDevice = input.value
+  // @ts-ignore
+  store.audio.setSinkId(input.value)
 }
 </script>
 
@@ -47,9 +42,9 @@ function play(path: string) {
       {{ sound.name }}
     </div>
   </div>
-  <player/>
+
   <br/>
-  <select class="bg-gray-400" v-model="input" @change="store.outputDevice = input">
+  <select class="bg-gray-400" v-model="input" @change="changeOutputDevice">
     <option
       v-for="device in devices" :key="device.kind+device.deviceId" :value="device.deviceId">
       {{ device.label }}

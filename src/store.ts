@@ -5,15 +5,18 @@ const audio = new Audio()
 audio.oncanplay = audio.play
 audio.volume = 0.25
 
+const audio2 = new Audio()
+audio2.oncanplay = audio2.play
+audio2.volume = 0.25
+
 export const useStore = defineStore('store', {
   state: () => {
     return {
-      playing: false as boolean | string,
       outputDevice: '',
       sounds,
-      soundPlaying: '',
       src: '',
-      audio
+      audio,
+      audio2
     }
   },
 
@@ -22,11 +25,14 @@ export const useStore = defineStore('store', {
       if (this.src !== src) {
         this.src = src
         this.audio.src = src
+        this.audio2.src = src
       }
 
       if (this.src === src && this.audio.readyState > 2) {
         this.audio.currentTime = 0
         this.audio.play()
+        this.audio2.currentTime = 0
+        this.audio2.play()
       }
     }
   }
