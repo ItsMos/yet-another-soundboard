@@ -1,4 +1,9 @@
-import altnames from './altnames.json'
+interface AltNames {
+  [key: string]: string;
+}
+
+import altnamesJson from './altnames.json'
+const altnames: AltNames = altnamesJson
 
 class Sound {
   name: string
@@ -8,16 +13,17 @@ class Sound {
   constructor(file: string, path: string) {
     this.name = file.replace(/\..*$/, '').replace(/-/g, ' ')
     this.path = path
-    if (altnames[this.name as keyof typeof altnames])
-      this.altname = altnames[this.name as keyof typeof altnames]
+    if (altnames[this.name])
+      this.altname = altnames[this.name]
   }
 }
 
-const files = import.meta.glob('./assets/audio/*.mp3', { as: 'url' })
-
-export const sounds: Sound[] = []
-
-for (const path in files) {
-  const file = path.split('/').slice(-1)[0]
-  sounds.push(new Sound(file, await files[path]()))
+export async function getSounds() {
+  const files = await import.meta.glob('./assets/audio/*.mp3', { as: 'url' })
+  const sounds: Sound[] = []
+  for (const path in files) {
+    const file = path.split('/').slice(-1)[0]
+    sounds.push(new Sound(file, await files[path]()))
+  }
+  return sounds
 }

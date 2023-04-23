@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { sounds } from './sounds'
+import { ref } from 'vue'
+import { getSounds } from './sounds'
 
 const audio = new Audio()
 audio.oncanplay = audio.play
@@ -9,31 +10,26 @@ const audio2 = new Audio()
 audio2.oncanplay = audio2.play
 audio2.volume = 0.25
 
-export const useStore = defineStore('store', {
-  state: () => {
-    return {
-      outputDevice: '',
-      sounds,
-      src: '',
-      audio,
-      audio2
+export const useStore = defineStore('store', () => {
+  const outputDevice = ref('')
+  const sounds = ref<any[]>([])
+  const playing = ref('')
+
+  getSounds().then(_sounds => sounds.value = _sounds)
+
+  function play(name: string) {
+    if (playing.value !== name) {
+      playing.value = name
+      audio.src = sounds.value.find(s => s.name === name)?.path || ''
+      audio2.src = sounds.value.find(s => s.name === name)?.path || ''
     }
-  },
 
-  actions: {
-    play(src: string) {
-      if (this.src !== src) {
-        this.src = src
-        this.audio.src = src
-        this.audio2.src = src
-      }
-
-      if (this.src === src && this.audio.readyState > 2) {
-        this.audio.currentTime = 0
-        this.audio.play()
-        this.audio2.currentTime = 0
-        this.audio2.play()
-      }
+    if (playing.value === name && audio.readyState > 2) {
+      audio.currentTime = 0
+      audio.play()
+      audio2.currentTime = 0
+      audio2.play()
     }
   }
+  return { outputDevice, playing, sounds, play, audio, audio2 }
 })
