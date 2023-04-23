@@ -1,5 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
-import fs from 'fs'
+import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 
@@ -74,6 +73,21 @@ async function createWindow() {
     return { action: 'deny' }
   })
   // win.webContents.on('will-navigate', (event, url) => { }) #344
+
+  const keybinds = {
+    'Alt+3': 'laughter',
+    '0': 'emotional damage'
+  }
+  for (const bind in keybinds) {
+    globalShortcut.register(bind, () => {
+      win.webContents.send('play', keybinds[bind])
+    })
+  }
+
+  ipcMain.handle('newBind', (ev, bind, sound) => {
+    console.log('binding '+ bind + ' to ' + sound)
+    return true
+  })  
 }
 
 app.whenReady().then(createWindow)
@@ -115,10 +129,4 @@ ipcMain.handle('open-win', (_, arg) => {
   } else {
     childWindow.loadFile(indexHtml, { hash: arg })
   }
-})
-
-ipcMain.handle('getSounds', async () => {
-  const files = await fs.readdirSync(process.env.PUBLIC + '/audio')
-  // console.info(files)
-  return files
 })

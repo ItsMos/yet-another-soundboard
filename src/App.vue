@@ -9,8 +9,8 @@ navigator.mediaDevices.enumerateDevices()
   devices.value = devs.filter(d => d.kind == 'audiooutput')
 })
 
-function play(path: string) {
-  store.play(path)
+function play(name: string) {
+  store.play(name)
 }
 
 const input = ref('')
@@ -19,6 +19,15 @@ function changeOutputDevice() {
   // @ts-ignore
   store.audio.setSinkId(input.value)
 }
+
+// @ts-ignore
+window.api.handlePlayBind((event, sound) => {
+  console.log('c> playing from rendrer '+ sound)
+  play(sound)
+})
+
+// @ts-ignore
+console.log(window.api.newBind('F2', 'laughter'))
 </script>
 
 <template>
@@ -30,6 +39,7 @@ function changeOutputDevice() {
     />
   </div>
   <div class="mt-10 flex flex-wrap">
+    {{ store.sounds.length }}
     <div
       class="bg-slate-500
       w-52 p-5 m-5 rounded-sm
@@ -37,7 +47,8 @@ function changeOutputDevice() {
       flex-1
       "
       v-for="sound in store.sounds"
-      @click="play(sound.path)"
+      :key="sound.name"
+      @click="play(sound.name)"
     >
       {{ sound.name }}
     </div>

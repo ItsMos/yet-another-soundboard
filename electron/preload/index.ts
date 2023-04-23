@@ -3,7 +3,8 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 // Custom APIs for renderer
 const api = {
-  getSounds: () => ipcRenderer.invoke('getSounds')
+  newBind: (key, sound) => ipcRenderer.invoke('newBind', key, sound),
+  handlePlayBind: callback => ipcRenderer.on('play', callback)
 } as any
 
 // Use `contextBridge` APIs to expose Electron APIs to
