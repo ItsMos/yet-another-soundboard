@@ -1,10 +1,15 @@
+import altnames from './altnames.json'
+
 class Sound {
   name: string
+  altname?: string
   path: string
 
   constructor(file: string, path: string) {
     this.name = file.replace(/\..*$/, '').replace(/-/g, ' ')
     this.path = path
+    if (altnames[this.name as keyof typeof altnames])
+      this.altname = altnames[this.name as keyof typeof altnames]
   }
 }
 
