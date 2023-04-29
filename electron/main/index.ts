@@ -1,6 +1,12 @@
 import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
+import fs from 'fs'
+let whisperAsync, whisperParams
+import('./whisper').then(m => {
+  whisperAsync = m.whisperAsync
+  whisperParams = m.whisperParams
+})
 
 // The built directory structure
 //
@@ -87,7 +93,30 @@ async function createWindow() {
   ipcMain.handle('newBind', (ev, bind, sound) => {
     console.log('binding '+ bind + ' to ' + sound)
     return true
-  })  
+  })
+
+  // console.log(join(process.cwd(), 'command.wav'))
+  ipcMain.on('saveMicAudio', (ev, audio) => {
+    try {
+      fs.writeFileSync('command.wav', Buffer.from(audio))
+      whisperParams.fname_inp = join(process.cwd(), 'command.wav')
+      whisperAsync(whisperParams).then(res => {
+        res = res.map(line => line.slice(-1)) // remove timestamps
+        res = res.join('')
+          .replace(/\(.+\)/g, '')
+          .replace(/\[.+\]/g, '')
+          .replace(/[^a-zA-Z0-9 ]/g, '')
+          .trim()
+        console.log('text:', res)
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+  globalShortcut.register('1', () => {
+    win.webContents.send('captureMicAudio')
+  })
 }
 
 app.whenReady().then(createWindow)

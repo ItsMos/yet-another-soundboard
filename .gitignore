@@ -1,3 +1,6 @@
+public/bin/ggml-tiny.en.bin
+/command.wav
+
 # Logs
 logs
 *.log

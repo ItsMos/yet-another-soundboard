@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useStore } from './store'
+// @ts-ignore
+import { recorder } from './record'
 const store = useStore()
 const devices = ref(<MediaDeviceInfo[]>[])
 
@@ -27,7 +29,32 @@ window.api.handlePlayBind((event, sound) => {
 })
 
 // @ts-ignore
-console.log(window.api.newBind('F2', 'laughter'))
+// console.log(window.api.newBind('F2', 'laughter'))
+
+async function startRecording() {
+  console.log('> recording')
+
+  recorder.start()
+  setTimeout(() => {
+    recorder.stop(async (data: any) => {
+      console.log('> stopped recording')
+      const exportedBlob = data
+
+      let reader = new FileReader()
+      reader.onload = function() {
+        if (reader.readyState == 2) {
+          let buffer = reader.result            
+          // @ts-ignore
+          window.api.saveMicAudio(buffer)
+        }
+      }
+      reader.readAsArrayBuffer(exportedBlob)
+    })
+  }, 2000)
+}
+
+// @ts-ignore
+window.api.handleCaptureMicAudio(startRecording)
 </script>
 
 <template>
@@ -39,7 +66,6 @@ console.log(window.api.newBind('F2', 'laughter'))
     />
   </div>
   <div class="mt-10 flex flex-wrap">
-    {{ store.sounds.length }}
     <div
       class="bg-slate-500
       w-52 p-5 m-5 rounded-sm

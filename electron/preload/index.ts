@@ -4,7 +4,10 @@ import { contextBridge, ipcRenderer } from 'electron'
 // Custom APIs for renderer
 const api = {
   newBind: (key, sound) => ipcRenderer.invoke('newBind', key, sound),
-  handlePlayBind: callback => ipcRenderer.on('play', callback)
+  saveMicAudio: (audio) => ipcRenderer.send('saveMicAudio', audio),
+
+  handleCaptureMicAudio: (callback) => ipcRenderer.on('captureMicAudio', callback),
+  handlePlayBind: callback => ipcRenderer.on('play', callback),
 } as any
 
 // Use `contextBridge` APIs to expose Electron APIs to
