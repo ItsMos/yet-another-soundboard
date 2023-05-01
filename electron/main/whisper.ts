@@ -10,11 +10,5 @@ export const whisperAsync = promisify(whisper)
 export const whisperParams = {
   language: "en",
   model: path.join(process.env.PUBLIC, "./bin/ggml-tiny.en.bin"),
-  fname_inp: path.join(process.env.PUBLIC, "jfk.wav")
+  fname_inp: "command.wav"
 }
-
-// console.log("whisperParams =", whisperParams)
-
-// whisperAsync(whisperParams).then((result) => {
-//   console.log(`Result from whisper: ${result}`)
-// })

@@ -1,20 +1,20 @@
 interface AltNames {
-  [key: string]: string;
+  [key: string]: string[];
 }
 
 import altnamesJson from './altnames.json'
 const altnames: AltNames = altnamesJson
 
-class Sound {
+export class Sound {
   name: string
-  altname?: string
+  altnames?: string[]
   path: string
 
   constructor(file: string, path: string) {
     this.name = file.replace(/\..*$/, '').replace(/-/g, ' ')
     this.path = path
     if (altnames[this.name])
-      this.altname = altnames[this.name]
+      this.altnames = altnames[this.name]
   }
 }
 

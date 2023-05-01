@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useStore } from './store'
 // @ts-ignore
-import { recorder } from './record'
+// import { recorder } from './record'
 const store = useStore()
 const devices = ref(<MediaDeviceInfo[]>[])
 
@@ -22,16 +22,41 @@ function changeOutputDevice() {
   store.audio.setSinkId(input.value)
 }
 
+const search = ref('')
+const sounds = computed(() => {
+  return store.searchSounds(search.value)
+})
+
+function playFromSearch() {
+  play(sounds.value[0].name)
+}
+
 // @ts-ignore
-window.api.handlePlayBind((event, sound) => {
-  console.log('c> playing from rendrer '+ sound)
-  play(sound)
+window.api.handlePlayBind((event, partOfName) => {
+  partOfName = partOfName.toLowerCase()
+  const sound = store.findSoundByName(partOfName)
+  if (sound) {
+    console.log('c> playing from rendrer '+ sound.name)
+    play(sound.name)
+  }
 })
 
 // @ts-ignore
 // console.log(window.api.newBind('F2', 'laughter'))
 
-async function startRecording() {
+const searchEl = ref()
+onMounted(() => {
+  // @ts-ignore
+  window.api.handleFocus(() => {
+    searchEl.value.focus()
+    searchEl.value.select()
+  })
+})
+
+// let recording = false
+/* async function startRecording() {
+  if (recording) return
+  recording = true
   console.log('> recording')
 
   recorder.start()
@@ -46,34 +71,39 @@ async function startRecording() {
           let buffer = reader.result            
           // @ts-ignore
           window.api.saveMicAudio(buffer)
+          recording = false
         }
       }
       reader.readAsArrayBuffer(exportedBlob)
     })
   }, 2000)
-}
-
+} */
 // @ts-ignore
-window.api.handleCaptureMicAudio(startRecording)
+// window.api.handleCaptureMicAudio(startRecording)
 </script>
 
 <template>
   <div class="w-[50%] mx-auto my-10 relative">
     <i class="absolute ml-2 mt-1">🔍</i>
-    <input placeholder="Search ..." type="text" class="w-[100%] h-8 pl-10 rounded-sm
-      bg-gray-400 text-black
+    <input
+      ref="searchEl"
+      v-model.trim="search"
+      @keypress.enter="playFromSearch"
+      placeholder="Search ..."
+      class="w-[100%] h-8 pl-10 rounded-sm
+       bg-gray-400 text-black
       "
     />
   </div>
   <div class="mt-10 flex flex-wrap">
     <div
-      class="bg-slate-500
-      w-52 p-5 m-5 rounded-sm
-      text-center cursor-pointer
-      flex-1
-      "
-      v-for="sound in store.sounds"
+      v-for="sound in sounds"
       :key="sound.name"
+      class="bg-slate-500
+        w-52 p-5 m-5 rounded-sm
+        text-center cursor-pointer
+        flex-1
+      "
       @click="play(sound.name)"
     >
       {{ sound.name }}

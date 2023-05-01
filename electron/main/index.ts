@@ -95,27 +95,33 @@ async function createWindow() {
     return true
   })
 
+  // globalShortcut.register('Control+2', () => {
+  //   win.webContents.send('captureMicAudio')
+  // })
+  globalShortcut.register('Control+1', () => {
+    app.focus()
+    win.webContents.send('focusSearch')
+  })
+
   // console.log(join(process.cwd(), 'command.wav'))
   ipcMain.on('saveMicAudio', (ev, audio) => {
     try {
       fs.writeFileSync('command.wav', Buffer.from(audio))
-      whisperParams.fname_inp = join(process.cwd(), 'command.wav')
+      whisperParams.fname_inp = 'command.wav'
       whisperAsync(whisperParams).then(res => {
         res = res.map(line => line.slice(-1)) // remove timestamps
+
         res = res.join('')
           .replace(/\(.+\)/g, '')
           .replace(/\[.+\]/g, '')
           .replace(/[^a-zA-Z0-9 ]/g, '')
           .trim()
         console.log('text:', res)
+        win.webContents.send('play', res)
       })
     } catch (error) {
       console.error(error)
     }
-  })
-
-  globalShortcut.register('1', () => {
-    win.webContents.send('captureMicAudio')
   })
 }
 
@@ -144,7 +150,7 @@ app.on('activate', () => {
 })
 
 // New window example arg: new windows url
-ipcMain.handle('open-win', (_, arg) => {
+/* ipcMain.handle('open-win', (_, arg) => {
   const childWindow = new BrowserWindow({
     webPreferences: {
       preload,
@@ -158,4 +164,4 @@ ipcMain.handle('open-win', (_, arg) => {
   } else {
     childWindow.loadFile(indexHtml, { hash: arg })
   }
-})
+}) */

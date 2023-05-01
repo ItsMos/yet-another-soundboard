@@ -8,6 +8,7 @@ const api = {
 
   handleCaptureMicAudio: (callback) => ipcRenderer.on('captureMicAudio', callback),
   handlePlayBind: callback => ipcRenderer.on('play', callback),
+  handleFocus: callback => ipcRenderer.on('focusSearch', callback)
 } as any
 
 // Use `contextBridge` APIs to expose Electron APIs to
