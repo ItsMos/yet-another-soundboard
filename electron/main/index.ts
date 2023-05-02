@@ -95,12 +95,15 @@ async function createWindow() {
     return true
   })
 
-  // globalShortcut.register('Control+2', () => {
+  // globalShortcut.register('Control+3', () => {
   //   win.webContents.send('captureMicAudio')
   // })
   globalShortcut.register('Control+1', () => {
     app.focus()
     win.webContents.send('focusSearch')
+  })
+  globalShortcut.register('Control+2', () => {
+    win.webContents.send('stop')
   })
 
   // console.log(join(process.cwd(), 'command.wav'))

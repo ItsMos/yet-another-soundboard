@@ -4,11 +4,11 @@ import { getSounds, Sound } from './sounds'
 
 const audio = new Audio()
 audio.oncanplay = audio.play
-audio.volume = 0.25
+audio.volume = 0.40
 
 const audio2 = new Audio()
 audio2.oncanplay = audio2.play
-audio2.volume = 0.25
+audio2.volume = 0.40
 
 export const useStore = defineStore('store', () => {
   const outputDevice = ref('')
@@ -32,6 +32,12 @@ export const useStore = defineStore('store', () => {
     }
   }
 
+  function stop() {
+    playing.value = ''
+    audio.src = ''
+    audio2.src = ''
+  }
+
   function findSoundByName(name: string): Sound | undefined {
     for (const sound of sounds.value) {
       if (sound.name.includes(name) || (sound.altnames && sound.altnames.includes(name))) {
@@ -46,5 +52,5 @@ export const useStore = defineStore('store', () => {
       s => s.name.includes(q) || s.altnames?.includes(q)
     )
   }
-  return { outputDevice, playing, sounds, play, audio, audio2, findSoundByName, searchSounds }
+  return { outputDevice, playing, sounds, play, stop, audio, audio2, findSoundByName, searchSounds }
 })

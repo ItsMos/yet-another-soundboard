@@ -6,17 +6,12 @@ import { useStore } from './store'
 const store = useStore()
 const devices = ref(<MediaDeviceInfo[]>[])
 
-navigator.mediaDevices.enumerateDevices()
-.then(devs => {
-  devices.value = devs.filter(d => d.kind == 'audiooutput')
-})
-
 function play(name: string) {
   store.play(name)
 }
 
-const input = ref('')
-function changeOutputDevice() {
+const input = ref()
+function changeOutputDevice() {  
   store.outputDevice = input.value
   // @ts-ignore
   store.audio.setSinkId(input.value)
@@ -36,16 +31,24 @@ window.api.handlePlayBind((event, partOfName) => {
   partOfName = partOfName.toLowerCase()
   const sound = store.findSoundByName(partOfName)
   if (sound) {
-    console.log('c> playing from rendrer '+ sound.name)
+    console.log('c> playing from bind: '+ sound.name)
     play(sound.name)
   }
 })
 
 // @ts-ignore
-// console.log(window.api.newBind('F2', 'laughter'))
+window.api.handleStopBind(() => store.stop())
+
+// @ts-ignore
+// console.log(window.api.newBind('F2', 'laughter'))s
 
 const searchEl = ref()
-onMounted(() => {
+onMounted(async () => {
+  const devs = await navigator.mediaDevices.enumerateDevices()
+  devices.value = devs.filter(d => d.kind == 'audiooutput')
+  input.value = devices.value.find(dev => dev.label.includes('CABLE Input'))?.deviceId
+  changeOutputDevice()
+
   // @ts-ignore
   window.api.handleFocus(() => {
     searchEl.value.focus()
@@ -102,7 +105,7 @@ onMounted(() => {
       class="bg-slate-500
         w-52 p-5 m-5 rounded-sm
         text-center cursor-pointer
-        flex-1
+        flex-grow
       "
       @click="play(sound.name)"
     >

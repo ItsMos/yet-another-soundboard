@@ -8,6 +8,7 @@ const api = {
 
   handleCaptureMicAudio: (callback) => ipcRenderer.on('captureMicAudio', callback),
   handlePlayBind: callback => ipcRenderer.on('play', callback),
+  handleStopBind: callback => ipcRenderer.on('stop', callback),
   handleFocus: callback => ipcRenderer.on('focusSearch', callback)
 } as any
 
