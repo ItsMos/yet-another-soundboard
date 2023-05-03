@@ -4,6 +4,8 @@ interface AltNames {
 
 import altnamesJson from './altnames.json'
 const altnames: AltNames = altnamesJson
+let store: any
+import('./store').then(s => store = s.useStore())
 
 export class Sound {
   name: string
@@ -15,6 +17,10 @@ export class Sound {
     this.path = path
     if (altnames[this.name])
       this.altnames = altnames[this.name]
+  }
+
+  play() {
+    store.play(this)
   }
 }
 

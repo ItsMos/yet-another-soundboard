@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { getSounds, Sound } from './sounds'
 
 const audio = new Audio()
@@ -14,21 +14,29 @@ export const useStore = defineStore('store', () => {
   const outputDevice = ref('')
   const sounds = ref<Sound[]>([])
   const playing = ref('')
+  const search = ref('')
 
   getSounds().then(_sounds => sounds.value = _sounds)
 
-  function play(name: string) {
-    if (playing.value !== name) {
-      playing.value = name
-      audio.src = sounds.value.find(s => s.name === name)?.path || ''
-      audio2.src = sounds.value.find(s => s.name === name)?.path || ''
+  function play(sound: Sound) {
+    if (playing.value !== sound.name) {
+      playing.value = sound.name
+      audio.src = sound.path
+      audio2.src = sound.path
     }
 
-    if (playing.value === name && audio.readyState > 2) {
+    if (playing.value === sound.name && audio.readyState > 2) {
       audio.currentTime = 0
       audio.play()
       audio2.currentTime = 0
       audio2.play()
+    }
+  }
+
+  function playByName(name: string) {
+    const sound = findSoundByName(name)
+    if (sound) {
+      play(sound)
     }
   }
 
@@ -47,10 +55,11 @@ export const useStore = defineStore('store', () => {
     return undefined
   }
 
-  function searchSounds(q: string) {
+  const filteredSounds = computed(() => {
     return sounds.value.filter(
-      s => s.name.includes(q) || s.altnames?.includes(q)
+      s => s.name.includes(search.value) || s.altnames?.includes(search.value)
     )
-  }
-  return { outputDevice, playing, sounds, play, stop, audio, audio2, findSoundByName, searchSounds }
+  })
+
+  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds }
 })

@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue'
 import { useStore } from './store'
+import AppHeader from './components/Header.vue'
 // @ts-ignore
 // import { recorder } from './record'
 const store = useStore()
 const devices = ref(<MediaDeviceInfo[]>[])
 
 function play(name: string) {
-  store.play(name)
+  store.playByName(name)
 }
 
 const input = ref()
@@ -17,23 +18,13 @@ function changeOutputDevice() {
   store.audio.setSinkId(input.value)
 }
 
-const search = ref('')
-const sounds = computed(() => {
-  return store.searchSounds(search.value)
-})
-
-function playFromSearch() {
-  play(sounds.value[0].name)
-}
+const sounds = computed(() => store.filteredSounds)
 
 // @ts-ignore
 window.api.handlePlayBind((event, partOfName) => {
   partOfName = partOfName.toLowerCase()
-  const sound = store.findSoundByName(partOfName)
-  if (sound) {
-    console.log('c> playing from bind: '+ sound.name)
-    play(sound.name)
-  }
+  console.log('c> playing from bind: '+ partOfName)
+  play(partOfName)
 })
 
 // @ts-ignore
@@ -42,18 +33,11 @@ window.api.handleStopBind(() => store.stop())
 // @ts-ignore
 // console.log(window.api.newBind('F2', 'laughter'))s
 
-const searchEl = ref()
 onMounted(async () => {
   const devs = await navigator.mediaDevices.enumerateDevices()
   devices.value = devs.filter(d => d.kind == 'audiooutput')
   input.value = devices.value.find(dev => dev.label.includes('CABLE Input'))?.deviceId
   changeOutputDevice()
-
-  // @ts-ignore
-  window.api.handleFocus(() => {
-    searchEl.value.focus()
-    searchEl.value.select()
-  })
 })
 
 // let recording = false
@@ -86,19 +70,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-[50%] mx-auto my-10 relative">
-    <i class="absolute ml-2 mt-1">🔍</i>
-    <input
-      ref="searchEl"
-      v-model.trim="search"
-      @keypress.enter="playFromSearch"
-      placeholder="Search ..."
-      class="w-[100%] h-8 pl-10 rounded-sm
-       bg-gray-400 text-black
-      "
-    />
-  </div>
-  <div class="mt-10 flex flex-wrap">
+  <AppHeader/>
+
+  <div class="mt-14 flex flex-wrap">
     <div
       v-for="sound in sounds"
       :key="sound.name"
