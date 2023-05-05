@@ -15,6 +15,7 @@ export const useStore = defineStore('store', () => {
   const sounds = ref<Sound[]>([])
   const playing = ref('')
   const search = ref('')
+  const settings = ref(false)
 
   getSounds().then(_sounds => sounds.value = _sounds)
 
@@ -56,10 +57,11 @@ export const useStore = defineStore('store', () => {
   }
 
   const filteredSounds = computed(() => {
+    let q = search.value.toLowerCase()
     return sounds.value.filter(
-      s => s.name.includes(search.value) || s.altnames?.includes(search.value)
+      s => s.name.toLowerCase().includes(q) || s.altnames?.some(str => str.includes(q))
     )
   })
 
-  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds }
+  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds, settings }
 })

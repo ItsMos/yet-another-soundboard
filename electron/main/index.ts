@@ -48,6 +48,7 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
+    autoHideMenuBar: true,
     title: 'Main window',
     icon: join(process.env.PUBLIC, 'favicon.ico'),
     webPreferences: {
@@ -82,8 +83,10 @@ async function createWindow() {
 
   const keybinds = {
     'Alt+3': 'laughter',
-    '0': 'emotional damage'
+    // '0': 'hello there obi wan',
+    // '9': 'emotional damage'
   }
+
   for (const bind in keybinds) {
     globalShortcut.register(bind, () => {
       win.webContents.send('play', keybinds[bind])
@@ -98,8 +101,7 @@ async function createWindow() {
   // globalShortcut.register('Control+3', () => {
   //   win.webContents.send('captureMicAudio')
   // })
-  globalShortcut.register('Control+1', () => {
-    app.focus()
+  win.webContents.on('focus', () => {
     win.webContents.send('focusSearch')
   })
   globalShortcut.register('Control+2', () => {

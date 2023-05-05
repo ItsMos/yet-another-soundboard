@@ -1,5 +1,9 @@
 <template>
-<header class="fixed w-[100%] top-5">
+<header class="fixed w-[100%] top-5 flex">
+  <button class="ml-5 bg-sky-200 rounded-sm px-2 py-1"
+    data-settingsBtn="true"
+    @click="store.settings = !store.settings"
+  >⚙</button>
   <div class="w-96 mx-auto relative">
     <i class="absolute ml-2 mt-1">🔍</i>
     <input

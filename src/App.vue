@@ -2,6 +2,7 @@
 import { onMounted, ref, computed } from 'vue'
 import { useStore } from './store'
 import AppHeader from './components/Header.vue'
+import Settings from './components/Settings.vue'
 // @ts-ignore
 // import { recorder } from './record'
 const store = useStore()
@@ -9,13 +10,6 @@ const devices = ref(<MediaDeviceInfo[]>[])
 
 function play(name: string) {
   store.playByName(name)
-}
-
-const input = ref()
-function changeOutputDevice() {  
-  store.outputDevice = input.value
-  // @ts-ignore
-  store.audio.setSinkId(input.value)
 }
 
 const sounds = computed(() => store.filteredSounds)
@@ -32,13 +26,6 @@ window.api.handleStopBind(() => store.stop())
 
 // @ts-ignore
 // console.log(window.api.newBind('F2', 'laughter'))s
-
-onMounted(async () => {
-  const devs = await navigator.mediaDevices.enumerateDevices()
-  devices.value = devs.filter(d => d.kind == 'audiooutput')
-  input.value = devices.value.find(dev => dev.label.includes('CABLE Input'))?.deviceId
-  changeOutputDevice()
-})
 
 // let recording = false
 /* async function startRecording() {
@@ -87,13 +74,7 @@ onMounted(async () => {
     </div>
   </div>
 
-  <br/>
-  <select class="bg-gray-400" v-model="input" @change="changeOutputDevice">
-    <option
-      v-for="device in devices" :key="device.kind+device.deviceId" :value="device.deviceId">
-      {{ device.label }}
-    </option>
-  </select>
+  <Settings/>
 </template>
 
 <style scoped>
