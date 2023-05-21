@@ -2,11 +2,13 @@ import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import fs from 'fs'
+import { Store } from './dataStore'
 let whisperAsync, whisperParams
 import('./whisper').then(m => {
   whisperAsync = m.whisperAsync
   whisperParams = m.whisperParams
 })
+const dataStore = new Store()
 
 // The built directory structure
 //
@@ -81,22 +83,18 @@ async function createWindow() {
   })
   // win.webContents.on('will-navigate', (event, url) => { }) #344
 
-  const keybinds = {
-    'Alt+3': 'laughter',
+  // const keybinds = {
+    // 'Alt+3': 'laughter',
     // '0': 'hello there obi wan',
     // '9': 'emotional damage'
-  }
+  // }
+  const keybinds = dataStore.get('keybinds')
 
   for (const bind in keybinds) {
     globalShortcut.register(bind, () => {
       win.webContents.send('play', keybinds[bind])
     })
   }
-
-  ipcMain.handle('newBind', (ev, bind, sound) => {
-    console.log('binding '+ bind + ' to ' + sound)
-    return true
-  })
 
   // globalShortcut.register('Control+3', () => {
   //   win.webContents.send('captureMicAudio')
@@ -154,19 +152,26 @@ app.on('activate', () => {
   }
 })
 
-// New window example arg: new windows url
-/* ipcMain.handle('open-win', (_, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  })
+ipcMain.handle('newBind', (ev, bind: string, sound: string) => {
+  console.log('binding '+ bind + ' to ' + sound)
+  console.log('store:')
+  const keybinds = dataStore.get('keybinds')
+  keybinds[bind] = sound
+  dataStore.set('keybinds', keybinds)
+  // console.log(dataStore.get('keybinds'))
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg}`)
-  } else {
-    childWindow.loadFile(indexHtml, { hash: arg })
-  }
-}) */
+  return globalShortcut.register(bind, () => {
+    win.webContents.send('play', sound)
+  })
+})
+
+ipcMain.handle('removeBind', (ev, key) => {
+  globalShortcut.unregister(key)
+  const keybinds = dataStore.get('keybinds')
+  delete keybinds[key]
+  dataStore.set('keybinds', keybinds)
+})
+
+ipcMain.handle('getData', (ev) => {
+  return dataStore.data
+})

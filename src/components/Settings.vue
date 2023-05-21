@@ -2,7 +2,7 @@
   <aside
     ref="settingsPanel"
     :class='[
-      "dark:bg-gray-800 bg-gray-400 h-screen w-56 px-5 fixed top-0 text-center transition-all",
+      "dark:bg-gray-800 bg-gray-400 h-screen w-56 px-5 fixed top-0 text-center transition-all z-20",
       settings? "visible opacity-100 left-0" : "invisible -left-56 opacity-0"
     ]'
   >
@@ -18,6 +18,13 @@
       </template>
     </div>
     <a href="#" class="text-fuchsia-300">Open Devices</a>
+
+    <h4 class="mt-5">Stop Audio Key</h4>
+    <div class="bg-gray-700 rounded-sm py-2 px-1 mt-1 text-sm text-ellipsis whitespace-nowrap overflow-hidden">
+      Control+2
+    </div>
+
+    <button @click="clearAllBinds" class="bg-sky-500 block rounded-sm px-2 py-1 mt-5 w-[100%]">❌ Clear All Binds</button>
   </aside>
 </template>
 
@@ -26,7 +33,7 @@ import { ref, onMounted } from 'vue'
 import { useStore } from '../store'
 import { storeToRefs } from 'pinia'
 const store = useStore()
-const { settings, outputDevice } = storeToRefs(store)
+const { settings, outputDevice, sounds } = storeToRefs(store)
 
 function changeOutputDevice(deviceId: string) {
   outputDevice.value = deviceId
@@ -56,4 +63,14 @@ addEventListener('click', ev => {
     settings.value = false
   }
 })
+
+function clearAllBinds() {
+  sounds.value.forEach(s => {
+    if (s.bind) {
+      // @ts-ignore
+      window.api.removeBind(s.bind)
+      s.bind = ''
+    }
+  })
+}
 </script>

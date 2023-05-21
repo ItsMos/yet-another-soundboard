@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useStore } from './store'
 import AppHeader from './components/Header.vue'
 import Settings from './components/Settings.vue'
 // @ts-ignore
 // import { recorder } from './record'
 const store = useStore()
-const devices = ref(<MediaDeviceInfo[]>[])
 
 function play(name: string) {
   store.playByName(name)
@@ -16,7 +15,7 @@ const sounds = computed(() => store.filteredSounds)
 
 // @ts-ignore
 window.api.handlePlayBind((event, partOfName) => {
-  partOfName = partOfName.toLowerCase()
+  // partOfName = partOfName.toLowerCase()
   console.log('c> playing from bind: '+ partOfName)
   play(partOfName)
 })
@@ -54,6 +53,63 @@ window.api.handleStopBind(() => store.stop())
 } */
 // @ts-ignore
 // window.api.handleCaptureMicAudio(startRecording)
+
+const favorites = ref(<{[key: string]: boolean}>{})
+function fav(name:string) {
+  if (!favorites.value[name]) {
+    favorites.value[name] = true
+  } else {
+    delete favorites.value[name]
+  }
+}
+
+const listeningToBind = ref('')
+const listener = (ev: KeyboardEvent) => {
+  ev.preventDefault()
+
+  if (['Shift', 'Alt', 'Control'].includes(ev.key)) {
+    return
+  }
+
+  const sound = sounds.value.find(s => s.name === listeningToBind.value)
+
+  if (ev.key === 'Escape') {
+    window.removeEventListener('keyup', listener)
+    if (sound) {
+      // @ts-ignore
+      window.api.removeBind(sound.bind)
+      sound.bind = ''
+    }
+    listeningToBind.value = ''
+    return
+  }
+
+  let keys = ''
+  if (ev.ctrlKey) keys += 'Control+'
+  if (ev.altKey) keys += 'Alt+'
+  if (ev.shiftKey) keys += 'Shift+'
+  keys += ev.key
+  // console.log(keys, '=>', listeningToBind.value)
+
+  if (sound) {
+    sound.bind = keys
+    // @ts-ignore
+    window.api.newBind(keys, sound.name).then(bound => {
+      console.log(bound)
+    })
+  }
+  // console.log(ev)
+  window.removeEventListener('keyup', listener)
+  listeningToBind.value = ''
+}
+
+function listenToBind(soundName: string) {
+  if (listeningToBind.value) {
+    window.removeEventListener('keyup', listener)
+  }
+  listeningToBind.value = soundName
+  window.addEventListener('keyup', listener)
+}
 </script>
 
 <template>
@@ -67,10 +123,34 @@ window.api.handleStopBind(() => store.stop())
         w-52 p-5 m-5 rounded-sm
         text-center cursor-pointer
         flex-grow
+        relative group
       "
       @click="play(sound.name)"
     >
       {{ sound.name }}
+
+      <button
+        title="Favorite this sound"
+        :class="[
+          'rounded-sm px-1 absolute bottom-1 right-1 group-hover:visible',
+          favorites[sound.name] ? 'visible' : 'invisible'
+        ]"
+        @click.stop="fav(sound.name)"
+      >
+        ⭐
+      </button>
+
+      <div
+        :class="[
+          listeningToBind == sound.name || sound.bind ? '' : 'invisible',
+          'w-[100%] absolute left-0 top-[100%] flex justify-center group-hover:visible'
+        ]"
+        @click.stop="listenToBind(sound.name)"
+      >
+        <div class="bg-gray-700 ml-2 mt-1 px-2 rounded-sm text-sm text-ellipsis whitespace-nowrap overflow-hidden h-5">
+          {{ sound.bind || 'click to add keybind' }}
+        </div>
+      </div>
     </div>
   </div>
 

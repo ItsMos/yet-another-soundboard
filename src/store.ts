@@ -4,11 +4,11 @@ import { getSounds, Sound } from './sounds'
 
 const audio = new Audio()
 audio.oncanplay = audio.play
-audio.volume = 0.40
+audio.volume = 0.70
 
 const audio2 = new Audio()
 audio2.oncanplay = audio2.play
-audio2.volume = 0.40
+audio2.volume = 0.70
 
 export const useStore = defineStore('store', () => {
   const outputDevice = ref('')
@@ -17,7 +17,23 @@ export const useStore = defineStore('store', () => {
   const search = ref('')
   const settings = ref(false)
 
-  getSounds().then(_sounds => sounds.value = _sounds)
+  const favorites = ref({})
+
+  getSounds().then(_sounds => {
+    // @ts-ignore
+    window.api.getData().then(data => {
+      for (const bind in data.keybinds) {
+        const soundName = data.keybinds[bind]
+        const sound = _sounds.find(s => s.name === soundName)
+        if (sound) {          
+          sound.bind = bind
+        }
+      }
+      sounds.value = _sounds
+
+      favorites.value = data.favorites
+    })
+  })
 
   function play(sound: Sound) {
     if (playing.value !== sound.name) {
@@ -63,5 +79,5 @@ export const useStore = defineStore('store', () => {
     )
   })
 
-  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds, settings }
+  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds, settings, favorites }
 })

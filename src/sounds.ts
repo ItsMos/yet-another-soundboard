@@ -11,6 +11,7 @@ export class Sound {
   name: string
   altnames?: string[]
   path: string
+  bind?: string
 
   constructor(file: string, path: string) {
     this.name = file.replace(/\.mp3$/, '').replace(/-/g, ' ')
