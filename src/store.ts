@@ -35,8 +35,6 @@ export const useStore = defineStore('store', () => {
         }
       })
       sounds.value = _sounds
-
-      favorites.value = data.favorites
     })
   })
 

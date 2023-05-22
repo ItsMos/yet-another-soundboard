@@ -12,7 +12,9 @@ function play(name: string) {
   store.playByName(name)
 }
 
-const sounds = computed(() => store.filteredSounds)
+const sounds = computed(() => {
+  return store.filteredSounds.sort((a,b) => a.favorite? -1 : 0)
+})
 
 // @ts-ignore
 window.api.handlePlayBind((event, partOfName) => {
