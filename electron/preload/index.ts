@@ -6,6 +6,7 @@ const api = {
   newBind: (key, sound) => ipcRenderer.invoke('newBind', key, sound),
   removeBind: (key) => ipcRenderer.invoke('removeBind', key),
   saveMicAudio: (audio) => ipcRenderer.send('saveMicAudio', audio),
+  fav: (sound, fav = true) => ipcRenderer.invoke('fav', sound, fav),
   getData: () => ipcRenderer.invoke('getData'),
 
   handleCaptureMicAudio: (callback) => ipcRenderer.on('captureMicAudio', callback),

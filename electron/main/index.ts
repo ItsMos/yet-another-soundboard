@@ -158,7 +158,6 @@ ipcMain.handle('newBind', (ev, bind: string, sound: string) => {
   const keybinds = dataStore.get('keybinds')
   keybinds[bind] = sound
   dataStore.set('keybinds', keybinds)
-  // console.log(dataStore.get('keybinds'))
 
   return globalShortcut.register(bind, () => {
     win.webContents.send('play', sound)
@@ -170,6 +169,21 @@ ipcMain.handle('removeBind', (ev, key) => {
   const keybinds = dataStore.get('keybinds')
   delete keybinds[key]
   dataStore.set('keybinds', keybinds)
+})
+
+ipcMain.handle('fav', (ev, sound, fav) => {
+  const favorites = dataStore.get('favorites')
+  
+  if (fav && !favorites.includes(sound)) {
+    favorites.push(sound)
+  }
+  if (!fav && favorites.includes(sound)) {
+    const index = favorites.indexOf(sound)
+    if (index >= 0) {
+      favorites.splice(index, 1)
+    }
+  }
+  dataStore.set('favorites', favorites)
 })
 
 ipcMain.handle('getData', (ev) => {

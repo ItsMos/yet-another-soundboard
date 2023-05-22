@@ -17,8 +17,6 @@ export const useStore = defineStore('store', () => {
   const search = ref('')
   const settings = ref(false)
 
-  const favorites = ref({})
-
   getSounds().then(_sounds => {
     // @ts-ignore
     window.api.getData().then(data => {
@@ -29,6 +27,13 @@ export const useStore = defineStore('store', () => {
           sound.bind = bind
         }
       }
+
+      data.favorites.forEach((fav: string) => {
+        const sound = _sounds.find(s => s.name === fav)
+        if (sound) {
+          sound.favorite = true
+        }
+      })
       sounds.value = _sounds
 
       favorites.value = data.favorites
@@ -79,5 +84,5 @@ export const useStore = defineStore('store', () => {
     )
   })
 
-  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds, settings, favorites }
+  return { outputDevice, playing, sounds, play, playByName, stop, audio, audio2, findSoundByName, search, filteredSounds, settings }
 })

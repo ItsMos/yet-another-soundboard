@@ -11,6 +11,7 @@ export class Sound {
   name: string
   altnames?: string[]
   path: string
+  favorite = false
   bind?: string
 
   constructor(file: string, path: string) {

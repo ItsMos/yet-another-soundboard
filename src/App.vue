@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useStore } from './store'
 import AppHeader from './components/Header.vue'
 import Settings from './components/Settings.vue'
+import { Sound } from './sounds'
 // @ts-ignore
 // import { recorder } from './record'
 const store = useStore()
@@ -54,13 +55,10 @@ window.api.handleStopBind(() => store.stop())
 // @ts-ignore
 // window.api.handleCaptureMicAudio(startRecording)
 
-const favorites = ref(<{[key: string]: boolean}>{})
-function fav(name:string) {
-  if (!favorites.value[name]) {
-    favorites.value[name] = true
-  } else {
-    delete favorites.value[name]
-  }
+function fav(sound: Sound) {
+  sound.favorite = !sound.favorite
+  // @ts-ignore
+  window.api.fav(sound.name, sound.favorite)
 }
 
 const listeningToBind = ref('')
@@ -133,9 +131,9 @@ function listenToBind(soundName: string) {
         title="Favorite this sound"
         :class="[
           'rounded-sm px-1 absolute bottom-1 right-1 group-hover:visible',
-          favorites[sound.name] ? 'visible' : 'invisible'
+          sound.favorite ? 'visible' : 'invisible'
         ]"
-        @click.stop="fav(sound.name)"
+        @click.stop="fav(sound)"
       >
         ⭐
       </button>

@@ -4,7 +4,7 @@ import fs from 'fs'
 
 const config = {
   fileName: 'data.json',
-  default: {keybinds: {}, favorites: {}}
+  default: {keybinds: {}, favorites: []}
 }
 
 export class Store {
