@@ -17,7 +17,7 @@
         🎤 Not Found <a href="#" class="text-fuchsia-300" @click="findOutPutDevice">(Refresh)</a>
       </template>
     </div>
-    <a href="#" class="text-fuchsia-300">Open Devices</a>
+    <a href="ms-settings:easeofaccess-audio" class="text-fuchsia-300">Open Devices</a>
 
     <h4 class="mt-5">Stop Audio Key</h4>
     <div class="bg-gray-700 rounded-sm py-2 px-1 mt-1 text-sm text-ellipsis whitespace-nowrap overflow-hidden">

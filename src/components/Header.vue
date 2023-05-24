@@ -1,6 +1,6 @@
 <template>
 <header class="fixed w-[100%] top-5 flex z-10">
-  <button class="ml-5 bg-sky-200 rounded-sm px-2 py-1"
+  <button class="ml-5 bg-sky-200 rounded-sm px-2 py-1 static md:absolute"
     data-settingsBtn="true"
     @click="store.settings = !store.settings"
   >⚙</button>
