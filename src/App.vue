@@ -110,6 +110,30 @@ function listenToBind(soundName: string) {
   listeningToBind.value = soundName
   window.addEventListener('keyup', listener)
 }
+
+function genColor (seed: number) {
+  let color = Math.floor((Math.abs(Math.sin(seed) * 16777215))).toString(16)
+  // pad any colors shorter than 6 characters with leading 0s
+  while(color.length < 6) {
+    color = '0' + color
+  }
+
+  return color
+}
+
+function getSeed(str: string) {
+  let seed = 0
+  str.split('').forEach(c => seed+= c.charCodeAt(0))
+  return seed
+}
+
+function getForeground(bgColor: string, lightColor: string, darkColor: string) {
+  var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor
+  var r = parseInt(color.substring(0, 2), 16); // hexToR
+  var g = parseInt(color.substring(2, 4), 16); // hexToG
+  var b = parseInt(color.substring(4, 6), 16); // hexToB
+  return (((r * 0.299) + (g * 0.587) + (b * 0.114)) > 186) ? darkColor : lightColor
+}
 </script>
 
 <template>
@@ -119,7 +143,11 @@ function listenToBind(soundName: string) {
     <div
       v-for="sound in sounds"
       :key="sound.name"
-      class="bg-slate-500
+      :style="{
+        background: '#' + genColor(getSeed(sound.name)),
+        color: getForeground(genColor(getSeed(sound.name)), '#fff', '#111')
+      }"
+      class="
         w-52 p-5 m-5 rounded-sm
         text-center cursor-pointer
         flex-grow
