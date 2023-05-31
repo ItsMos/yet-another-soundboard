@@ -51,7 +51,7 @@ const indexHtml = join(process.env.DIST, 'index.html')
 async function createWindow() {
   win = new BrowserWindow({
     autoHideMenuBar: true,
-    title: 'Main window',
+    title: "Yet Another Soundboard",
     icon: join(process.env.PUBLIC, 'favicon.ico'),
     webPreferences: {
       preload,

@@ -1,14 +1,14 @@
 {
-  "name": "soundboard",
-  "version": "2.0.0",
+  "name": "yet-another-soundboard",
+  "version": "1.0.0",
   "main": "dist-electron/main/index.js",
   "description": "soundboard",
   "author": "Mos",
   "license": "MIT",
   "private": true,
   "keywords": [
+    "soundboard",
     "electron",
-    "rollup",
     "vite",
     "vue3",
     "vue"

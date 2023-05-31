@@ -2,9 +2,10 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "YourAppID",
+  "appId": "com.electron.yas",
+  "productName": "Yet Another Soundboard",
   "asar": true,
-  "icon": "public/favicon.ico",
+  "icon": "public/icon.png",
   "directories": {
     "output": "release/${version}"
   },
@@ -13,6 +14,7 @@
     "dist"
   ],
   "mac": {
+    "category": "public.app-category.entertainment",
     "artifactName": "${productName}_${version}.${ext}",
     "target": [
       "dmg"

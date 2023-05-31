@@ -4,11 +4,11 @@ import { getSounds, Sound } from './sounds'
 
 const audio = new Audio()
 audio.oncanplay = audio.play
-audio.volume = 0.70
+audio.volume = 0.35
 
 const audio2 = new Audio()
 audio2.oncanplay = audio2.play
-audio2.volume = 0.70
+audio2.volume = 0.35
 
 export const useStore = defineStore('store', () => {
   const outputDevice = ref('')
