@@ -5,7 +5,7 @@
   "appId": "com.electron.yas",
   "productName": "Yet Another Soundboard",
   "asar": true,
-  "icon": "public/icon.png",
+  "icon": "public/icon.ico",
   "directories": {
     "output": "release/${version}"
   },
@@ -14,7 +14,7 @@
     "dist"
   ],
   "mac": {
-    "icon": "public/icon.png",
+    "icon": "public/icon.ico",
     "category": "public.app-category.entertainment",
     "artifactName": "${productName}_${version}.${ext}",
     "target": [
@@ -22,7 +22,7 @@
     ]
   },
   "win": {
-    "icon": "public/icon.png",
+    "icon": "public/icon.ico",
     "target": [
       {
         "target": "nsis",
