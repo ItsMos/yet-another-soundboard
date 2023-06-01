@@ -5,7 +5,7 @@
   "appId": "com.electron.yas",
   "productName": "Yet Another Soundboard",
   "asar": true,
-  "icon": "public/icon.ico",
+  "icon": "public/icon.png",
   "directories": {
     "output": "release/${version}"
   },
