@@ -14,7 +14,7 @@
     "dist"
   ],
   "mac": {
-    "icon": "public/icon.ico",
+    "icon": "public/icon.png",
     "category": "public.app-category.entertainment",
     "artifactName": "${productName}_${version}.${ext}",
     "target": [
