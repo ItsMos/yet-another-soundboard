@@ -5,6 +5,10 @@
   "appId": "com.electron.yas",
   "productName": "Yet Another Soundboard",
   "asar": true,
+  "publish": {
+    "provider": "github",
+    "token": "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"
+  },
   "icon": "public/icon.png",
   "directories": {
     "output": "release/${version}"
